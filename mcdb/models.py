@@ -75,10 +75,11 @@ class Student(models.Model):
 
 
 class Teacher(models.Model):
-    id=models.AutoField(primary_key=True, verbose_name='老师ID')
-    openid = models.CharField(max_length=50, verbose_name='微信OPENID')
-    name=models.CharField(max_length=20, verbose_name='老师姓名')
-    gender=models.BooleanField(verbose_name='性别',choices=((0,'男'),(1,'女')))
+    id = models.AutoField(primary_key=True, verbose_name='老师ID')
+    name = models.CharField(max_length=20, verbose_name='老师姓名')
+    gender = models.BooleanField(verbose_name='性别', choices=((0, '男'), (1, '女')))
+    phone = models.CharField(max_length=20, default='', verbose_name="手机号")
+    password = models.CharField(max_length=30, default='', verbose_name="登录密码")
     age = models.CharField(max_length=10, verbose_name='老师年龄')
     content = models.CharField(max_length=20, verbose_name='老师个人介绍')
     isDelete = models.BooleanField(default=False)
@@ -112,7 +113,8 @@ class Course(models.Model):
     id=models.AutoField(primary_key=True, verbose_name='课程ID')
     name = models.CharField(max_length=20, verbose_name='课程名称')
     content = models.CharField(max_length=20, verbose_name='课程介绍')
-    date=models.DateTimeField(verbose_name='时间')
+    date = models.DateTimeField(verbose_name='开课时间')
+    duration = models.IntegerField(default=0, verbose_name="课程时长")
     max_number = models.IntegerField(verbose_name='课程容纳最多人数')
     current_number = models.IntegerField(default=0, verbose_name='当前选课人数')
     isDelete = models.BooleanField(default=False)
@@ -138,7 +140,7 @@ class Course(models.Model):
 
             if isinstance(f, models.ForeignKey):
                 if f.name=='teacher':
-                    value=Teacher.objects.get(id=value).to_dict()
+                    value = Teacher.objects.get(id=value).to_dict()
                 elif f.name=='belong':
                     value = Address.objects.get(id=value).to_dict()
 

@@ -19,10 +19,6 @@ def index(request):
     return render(request, "index.html")
 
 
-def test(request):
-    return render(request, "test.html")
-
-
 def r_oauth(request):
     """
     用户同意授权，获取code
@@ -47,14 +43,12 @@ def user(request):
     #
     code = request.GET.get("code")
     if not code:    # 如果没有获取到code
-        print("Do not get code")
         return redirect(CONFIG.r_oauth)
 
     token_url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid={0}&secret={1}&code={2}&grant_type=authorization_code"
     token_url = token_url.format(CONFIG.app_id, CONFIG.app_secret, code)
     data = requests.get(token_url)
     if not data:
-        print("Do not have data")
         return HttpResponse("not find data!")
     data = json.loads(data.content.decode("utf-8"))
     if "errcode" in data:
@@ -243,4 +237,36 @@ def cancelSubscribe(request):
     url = CONFIG.mylessons
     return redirect(url,{'index':CONFIG.HTML_INDEX['mylessons']})
 
+###################################################################
+#   老师预登录
+###################################################################
+def prelogin_teacher(request):
+    return render(request, "prelogin_teacher.html", {'info': "预登录"})
 
+
+###################################################################
+#   老师登录
+###################################################################
+def login_teacher(request):
+
+    result = []
+    if request.method == 'POST':
+        phone = request.POST.get('phone')
+        password = request.POST.get('password')
+        if phone is None or password is None:
+            return render(request, "prelogin_teacher.html", {'error_msg': "手机号或者密码不能为空！"})
+
+        true_teacher = Teacher.objects.filter(phone = phone, password = password)
+        if len(true_teacher) == 0:
+            return render(request, "prelogin_teacher.html", {'error_msg': "手机号或者密码错误"})
+
+        teacher = Teacher.objects.get(phone=phone, password=password)
+        request.session['teacher_id'] = teacher.id
+
+        courses = Course.objects.filter(teacher = true_teacher)
+        print(courses)
+        for course in courses:
+            course.to_dict()
+            result.append(course)
+
+    return render(request, "index_teacher.html", {'result': result, 'teacher_name': teacher.name})

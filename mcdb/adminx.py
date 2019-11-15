@@ -24,16 +24,18 @@ class AddressAdmin(object):
 
 
 class TeacherAdmin(object):
-    list_display = ['id', 'openid', 'name', 'gender', 'age', 'content', 'isDelete', 'belong']
+    list_display = ['id', 'name', 'gender', 'age', 'phone', 'password', 'content', 'isDelete', 'belong']
     search_fields = ['id']
-    list_editable = ['openid', 'name', 'gender', 'age', 'content', 'isDelete', 'belong']
+    list_editable = ['name', 'gender', 'age', 'phone', 'password', 'content', 'isDelete', 'belong']
     list_filter = ['id']
 
 
 class CourseAdmin(object):
-    list_display = ['id', 'name', 'content', 'date', 'current_number', 'max_number', 'teacher', 'students',  'belong']
+    list_display = ['id', 'name', 'content', 'date', 'duration', 'current_number', 'max_number', 'teacher', 'students',
+                    'belong']
     search_fields = ['id']
-    list_editable = ['name', 'content', 'date', 'teacher', 'max_number', 'students', 'belong']
+    list_editable = ['name', 'content', 'date', 'duration', 'teacher', 'current_number', 'max_number', 'students',
+                     'belong']
     list_filter = ['id']
 
 

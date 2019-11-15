@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
-
+import mcdb.config as CONFIG
 import pymysql
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -27,7 +27,7 @@ SECRET_KEY = '@$plnwyao-&5-e$o6n+qs8%^5dezf&8an*ugch+w=y4(*#^&m!'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost', 'zhzhang1997.natapp1.cc']
+ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost', CONFIG.ROOT_URL]
 
 
 # Application definition
@@ -80,17 +80,7 @@ WSGI_APPLICATION = 'TDSport.wsgi.application'
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 pymysql.install_as_MySQLdb()
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',       # 数据库引擎
-        'NAME': 'tdsports',
-        'USER': 'zzh',
-        'PASSWORD': '123456',
-        'HOST': 'localhost',    # 主机
-        'PORT': 3306,           # 数据库使用的端口
-        'TEST_CHARSET': 'utf8mb4',
-    }
-}
+DATABASES = CONFIG.DATABASE
 
 
 # Password validation

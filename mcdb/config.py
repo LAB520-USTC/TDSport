@@ -37,6 +37,7 @@ lessons=ROOT_URL+'lessons/'
 mylessons=ROOT_URL+'mylessons/'
 subscribe=ROOT_URL+'subscribe/'
 cancelSubscribe=ROOT_URL+'cancelSubscribe'
+prelogin_teacher=ROOT_URL+"prelogin_teacher"
 
 HTML_INDEX={'index':0,'lessons':1,'mylessons':2,'myinfo':3}
 
