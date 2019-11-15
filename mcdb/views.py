@@ -1,0 +1,271 @@
+from django.shortcuts import render
+from django.shortcuts import HttpResponse, redirect, reverse
+from django.views.decorators.csrf import csrf_exempt
+import urllib.parse
+import mcdb.config as CONFIG
+from django.contrib import messages
+import json
+import requests
+from mcdb.models import *
+from django.utils import timezone
+import datetime
+
+# Create your views here.
+
+def main(request):
+    return render(request, "index.html")
+
+
+def index(request):
+    return render(request, "index.html")
+
+
+def test(request):
+    return render(request, "test.html")
+
+
+def r_oauth(request):
+    """
+    用户同意授权，获取code
+    :param request:
+    :return:
+    """
+    # url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid={0}&redirect_uri={1}&response_type=code&scope={2}&state={3}#wechat_redirect"
+    # redirect_uri = CONFIG.redirect_uri
+    # #redirect_uri = urllib.parse.quote(redirect_uri)
+    # url.format(CONFIG.app_id, redirect_uri, CONFIG.scope, CONFIG.state)
+    # return redirect(url.format(CONFIG.app_id, redirect_uri, CONFIG.scope, CONFIG.state))
+    url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx3a9952f97ab8dffe&redirect_uri=http://xuezhen.natapp1.cc/user&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect"
+    return redirect(url)
+
+
+def get_userinfo(request):
+    # # 判断access_token中是否存在access_token, 如果不存在，则回调 r_oauth 函数
+    # is_exist = request.session.get('code', False)
+    # if not is_exist:
+    #     # return redirect(reverse('r_oauth'))
+    # else:
+    #
+    code = request.GET.get("code")
+    if not code:    # 如果没有获取到code
+        return redirect("http://xuezhen.natapp1.cc/r_oauth")
+
+    token_url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid={0}&secret={1}&code={2}&grant_type=authorization_code"
+    token_url = token_url.format(CONFIG.app_id, CONFIG.app_secret, code)
+
+    data = requests.get(token_url)
+    if not data:
+        return HttpResponse("not find data!")
+    data = json.loads(data.content.decode("utf-8"))
+    print(str(data))
+    if "errcode" in data:
+        return redirect("http://xuezhen.natapp1.cc/r_oauth")
+
+    access_token = data["access_token"]
+    open_id = data["openid"]
+    request.session['openid'] = open_id         # 将用户的openid存入session
+    refresh_token = data["refresh_token"]
+
+    if not access_token or not open_id:
+        return None     # 判别access_token和open_id是否为空
+
+    user_url = "https://api.weixin.qq.com/sns/userinfo?access_token={0}&openid={1}&lang=zh_CN"
+    user_info = requests.get(user_url.format(access_token, open_id))
+    user_info = user_info.content.decode("utf-8")
+    if not user_info:
+        return None
+    user_info = json.loads(user_info)
+
+    # 解决token过期的问题
+    if "errcode" in user_info and user_info["errcode"] == 40001:
+        refresh_token_url = "https://api.weixin.qq.com/sns/oauth2/refresh_token?appid={0}&grant_type=refresh_token&refresh_token={1}"
+        refresh_token_url = refresh_token_url.format(CONFIG.app_id, refresh_token)
+        r_userinfo = requests.get(refresh_token_url)
+        r_userinfo = json.loads(r_userinfo.content.decode("utf-8"))
+        access_token = r_userinfo['access_token']
+
+    user_info = requests.get(user_url.format(access_token, open_id))
+    user_info = user_info.content.decode("utf-8")
+    user_info = json.loads(user_info)
+
+    response = HttpResponse(json.dumps(user_info))
+    response.set_cookie("userinfo", json.dumps(user_info), max_age=7 * 24 * 3600)   # 用户信息保存到cookie，设置过期时间为7天
+
+    request.session['nickname'] = user_info.get('nickname')
+    request.session['headimgurl'] = user_info.get('headimgurl')
+
+    stu = Student()
+    q_user = Student.objects.filter(openid=open_id)
+    address = Address.objects.get(id=1)
+
+    if len(q_user) == 0:
+        stu.openid = open_id
+        stu.name = user_info.get('nickname')
+        # print(user_info.get('sex'))
+        stu.gender = user_info.get('sex')
+        stu.belong = address
+        stu.save()
+
+    else:
+        stu = Student.objects.get(openid=open_id)
+        stu.gender = user_info.get('sex')
+        stu.belong = address
+        stu.save()
+
+    return render(request, 'index.html', user_info)
+
+
+###################################################################
+#   个人信息
+###################################################################
+def myinfo(request):
+    nickname = request.session.get('nickname')
+    headimgurl = request.session.get('headimgurl')
+    result = {'nickname': nickname, 'headimgurl': headimgurl}
+    return render(request, "myinfo.html", result)
+
+
+###################################################################
+#   展示全部课程
+###################################################################
+def lessons(request):
+    openid = request.session.get('openid')  # 从session中获取openid
+    student = Student.objects.get(openid=openid)  # 根据openid从数据库中获取对应学生对象
+    mylesson = Course.objects.filter(students__openid=student.openid)
+    mylessonID = []
+    for lesson in mylesson:
+        mylessonID.append(lesson.id)
+
+    courses = Course.objects.all()
+    result = {}
+    for i, course in enumerate(courses):
+        stri = '%d' % i
+        tag = 0
+        for myid in mylessonID:
+            if myid == course.id:
+                tag = 1
+        if not tag:
+            result.update({stri: course})
+
+    return render(request, "lessons.html", {'result': result})
+
+
+###################################################################
+#   展示我的已订阅课程
+###################################################################
+def mylessons(request):
+    openid = request.session.get('openid')              # 从session中获取openid
+    student = Student.objects.get(openid=openid)        # 根据openid从数据库中获取对应学生对象
+    mylesson = Course.objects.filter(students__openid=student.openid)
+    result = {}
+    for i, lesson in enumerate(mylesson):
+        stri = '%d' % i
+        result.update({stri: lesson})
+    return render(request, "mylessons.html", {'result': result})
+
+
+###################################################################
+#   订阅课程
+###################################################################
+def subscribe(request):
+    course_id = request.POST.get('course_id')
+    courseR = Course.objects.get(id=course_id)          # 这是要预定的课程
+    openid = request.session.get('openid')
+    student = Student.objects.get(openid=openid)
+
+    courses = Course.objects.all()
+    result = {}
+    for i, course in enumerate(courses):
+        stri = '%d' % i
+        result.update({stri: course})
+
+    # 判断是否为会员
+    isvip = VIP2Student.objects.filter(student__openid=student.openid)
+    if len(isvip) == 0:
+        return render(request, "lessons.html", {'warning': "对不起,你还不是本课程的会员", 'result': result, 'course_id': courseR.id})
+
+    # 判断会员是否过期
+    vipdate = VIP2Student.objects.get(student__openid=student.openid)
+    vip_end_time = vipdate.end_time             # 会员结束时间
+    if vip_end_time < timezone.now().date():
+        return render(request, "lessons.html", {'warning': "对不起，你的会员已经过期", 'result': result, 'course_id': courseR.id})
+
+    # 判断当前选课人数是否超过最大人数
+    if courseR.current_number >= courseR.max_number:
+        return render(request, "lessons.html", {'warning': "对不起，当前课程已满额", 'result': result, 'course_id': courseR.id})
+
+    courseR.current_number += 1
+    courseR.save()
+
+    course2student = Course2Student()
+    course2student.student = student
+    course2student.course = courseR
+    course2student.save()
+    url = "http://xuezhen.natapp1.cc/mylessons"
+    return redirect(url)
+
+
+###################################################################
+#   取消订阅
+###################################################################
+def cancelSubscribe(request):
+    course_id = request.POST.get('course_id')
+    courseR = Course.objects.get(id=course_id)
+    openid = request.session.get('openid')
+    student = Student.objects.get(openid=openid)
+
+    # 根据 openid 获取我的订阅课程
+    mylesson = Course.objects.filter(students__openid=student.openid)
+    result = {}
+    for i, lesson in enumerate(mylesson):
+        stri = '%d' % i
+        result.update({stri: lesson})
+
+    if courseR.date.date() - datetime.timedelta(days=1) < timezone.now().date():
+        return render(request, "mylessons.html", {'warning': "距离开课前一天不能取消", 'result': result, 'course_id': courseR.id})
+
+    # 取消预约，则课程的当前选课人数减一
+    courseR.current_number -= 1
+    courseR.save()
+    # 从数据库中删除取消订阅的课程学生联系
+    course2student = Course2Student.objects.get(course=courseR, student=student)
+    course2student.delete()
+
+    url = "http://xuezhen.natapp1.cc/mylessons"
+    return redirect(url)
+
+
+###################################################################
+#   老师预登录
+###################################################################
+def prelogin_teacher(request):
+    return render(request, "prelogin_teacher.html", {'info': "预登录"})
+
+
+###################################################################
+#   老师登录
+###################################################################
+def login_teacher(request):
+
+    result = []
+    if request.method == 'POST':
+        phone = request.POST.get('phone')
+        password = request.POST.get('password')
+        if phone is None or password is None:
+            return render(request, "prelogin_teacher.html", {'error_msg': "手机号或者密码不能为空！"})
+
+        true_teacher = Teacher.objects.filter(phone = phone, password = password)
+        if len(true_teacher) == 0:
+            return render(request, "prelogin_teacher.html", {'error_msg': "手机号或者密码错误"})
+
+        teacher = Teacher.objects.get(phone=phone, password=password)
+        request.session['teacher_id'] = teacher.id
+
+        courses = Course.objects.filter(teacher = true_teacher)
+        print(courses)
+        for course in courses:
+            course.to_dict()
+            result.append(course)
+
+    return render(request, "index_teacher.html", {'result': result, 'teacher_name': teacher.name})
+
