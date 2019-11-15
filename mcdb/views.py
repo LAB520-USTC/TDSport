@@ -28,7 +28,7 @@ def r_oauth(request):
     url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid={0}&redirect_uri={1}&response_type=code&scope={2}&state={3}#wechat_redirect"
     # redirect_uri = CONFIG.redirect_uri
     # #redirect_uri = urllib.parse.quote(redirect_uri)
-    url.format(CONFIG.app_id, CONFIG.redirect2userUri, CONFIG.scope, CONFIG.state)
+    url=url.format(CONFIG.app_id, CONFIG.redirect2userUri, CONFIG.scope, CONFIG.state)
     # return redirect(url.format(CONFIG.app_id, redirect_uri, CONFIG.scope, CONFIG.state))
     # url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx42290aa31253c620&redirect_uri=http://zhzhang1997.natapp1.cc/user&response_type=code&scope=snsapi_userinfo&state=123&connect_redirect=1#wechat_redirect"
     return redirect(url)

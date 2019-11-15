@@ -13,6 +13,7 @@ state = "openid_required"
 app_id=app_id_z
 app_secret=app_secret_z
 ROOT_URL="http://xuezhen.natapp1.cc/"
+ALLOWED_HOSTS="xuezhen.natapp1.cc"
 redirect2userUri = ROOT_URL+"user/"
 #settings.database
 database_zzh={
@@ -26,7 +27,6 @@ database_zzh={
         'TEST_CHARSET': 'utf8mb4',
     }
 }
-
 database_dxz = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',       # 数据库引擎
