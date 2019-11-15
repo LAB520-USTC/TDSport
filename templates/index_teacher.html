@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{teacher_name}}老师的主页</title>
+    <!-- 适应移动端 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link REL="SHORTCUT ICON" href="{% static 'images/favicon.ico' %}"/>
+    <!-- 引入 Bootstrap css文件 -->
+    <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'bootstrap/css/bootstrap.css' %}" rel="stylesheet" type="text/css">
+    <!-- 引入 weui css文件 -->
+    <link href="{% static 'weui-2.1.2/dist/style/weui.css' %}" rel="stylesheet" type="text/css">
+    <!-- bootstrap.js 依赖 jquery.js 和popper.js，因此在这里引入 -->
+    <script src="{% static 'jquery/jquery-3.4.1.js' %}"></script>
+    <script src="{% static 'popper/popper.js' %}"></script>
+</head>
+
+<body>
+
+<div class="container" style="margin-top: 5px">
+
+    {% for course in result %}
+
+        <div class="list-group">
+          <a href="#" class="list-group-item active">
+            {{course.name}}
+          </a>
+          <a href="#" class="list-group-item">上课时间： {{course.date}}</a>
+          <a href="#" class="list-group-item">选课人数： {{course.current_number}}/{{course.max_number}}</a>
+          <a href="#" class="list-group-item">课程时长： {{course.duration}} 分钟</a>
+        </div>
+
+    {% endfor %}
+
+</div>
+
+</body>
+</html>
