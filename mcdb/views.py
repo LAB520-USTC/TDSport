@@ -28,7 +28,8 @@ def r_oauth(request):
     url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid={0}&redirect_uri={1}&response_type=code&scope={2}&state={3}#wechat_redirect"
     # redirect_uri = CONFIG.redirect_uri
     # #redirect_uri = urllib.parse.quote(redirect_uri)
-    url.format(CONFIG.app_id, CONFIG.redirect2userUri, CONFIG.scope, CONFIG.state)
+    url=url.format(CONFIG.app_id, CONFIG.redirect2userUri, CONFIG.scope, CONFIG.state)
+    print(url)
     # return redirect(url.format(CONFIG.app_id, redirect_uri, CONFIG.scope, CONFIG.state))
     #url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx42290aa31253c620&redirect_uri=http://zhzhang1997.natapp1.cc/user&response_type=code&scope=snsapi_userinfo&state=123&connect_redirect=1#wechat_redirect"
     return redirect(url)
@@ -44,7 +45,6 @@ def user(request):
     code = request.GET.get("code")
     if not code:    # 如果没有获取到code
         return redirect(CONFIG.r_oauth)
-
     token_url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid={0}&secret={1}&code={2}&grant_type=authorization_code"
     token_url = token_url.format(CONFIG.app_id, CONFIG.app_secret, code)
     data = requests.get(token_url)
@@ -58,7 +58,6 @@ def user(request):
     open_id = data["openid"]
     request.session['openid'] = open_id         # 将用户的openid存入session
     refresh_token = data["refresh_token"]
-
     if not access_token or not open_id:
         return None     # 判别access_token和open_id是否为空
 

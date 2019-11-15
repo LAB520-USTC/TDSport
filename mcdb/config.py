@@ -13,6 +13,7 @@ state = "openid_required"
 app_id=app_id_z
 app_secret=app_secret_z
 ROOT_URL="http://zhzhang1997.natapp1.cc/"
+ALLOWED_HOSTS="zhzhang1997.natapp1.cc"
 redirect2userUri = ROOT_URL+"user/"
 #settings.database
 database_zzh={

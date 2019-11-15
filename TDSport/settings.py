@@ -27,7 +27,7 @@ SECRET_KEY = '@$plnwyao-&5-e$o6n+qs8%^5dezf&8an*ugch+w=y4(*#^&m!'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost', CONFIG.ROOT_URL]
+ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost', CONFIG.ALLOWED_HOSTS]
 
 
 # Application definition
