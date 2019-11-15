@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>授课老师登录</title>
+    <!-- 适应移动端 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link REL="SHORTCUT ICON" href="{% static 'images/favicon.ico' %}"/>
+    <!-- 引入 Bootstrap css文件 -->
+    <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'bootstrap/css/bootstrap.css' %}" rel="stylesheet" type="text/css">
+    <!-- 引入 weui css文件 -->
+    <link href="{% static 'weui-2.1.2/dist/style/weui.css' %}" rel="stylesheet" type="text/css">
+    <!-- bootstrap.js 依赖 jquery.js 和popper.js，因此在这里引入 -->
+    <script src="{% static 'jquery/jquery-3.4.1.js' %}"></script>
+    <script src="{% static 'popper/popper.js' %}"></script>
+</head>
+
+<body>
+<div class="container">
+
+    <img src="{% static 'images/login_teacher.jpg' %}" alt="..." class="img-circle center-block" style="width: auto; height: auto; max-width: 50%; max-height: 50%; ">
+    <form action="/login_teacher" method="post">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="exampleInputEmail1">手机号</label>
+            <input type="text" name="phone" class="form-control" id="exampleInputEmail1" placeholder="Phone">
+        </div>
+
+        <div class="form-group">
+            <label for="exampleInputPassword1">密码</label>
+            <input type="password" name="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+        </div>
+
+        <button type="submit" class="btn btn-default">Submit</button>
+        <p style="color: red">{{ error_msg }}</p>
+    </form>
+
+</div>
+</body>
+</html>
