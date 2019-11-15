@@ -29,7 +29,6 @@ def r_oauth(request):
     # redirect_uri = CONFIG.redirect_uri
     # #redirect_uri = urllib.parse.quote(redirect_uri)
     url=url.format(CONFIG.app_id, CONFIG.redirect2userUri, CONFIG.scope, CONFIG.state)
-    print(url)
     # return redirect(url.format(CONFIG.app_id, redirect_uri, CONFIG.scope, CONFIG.state))
     #url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx42290aa31253c620&redirect_uri=http://zhzhang1997.natapp1.cc/user&response_type=code&scope=snsapi_userinfo&state=123&connect_redirect=1#wechat_redirect"
     return redirect(url)
@@ -136,7 +135,7 @@ def lessons(request):
         course.update({'tag':0})
         for myid in mylessonID:
             if myid == course['id']:
-                course['tag']=1
+                course['tag'] = 1
         result.update({stri: course})
 
     return render(request, "lessons.html", {'result': result,'index':CONFIG.HTML_INDEX['lessons']})
@@ -153,7 +152,7 @@ def mylessons(request):
     for i, lesson in enumerate(mylesson):
         stri = '%d' % i
         result.update({stri: lesson.to_dict()})
-    return render(request, "mylessons.html", {'result': result,'index':CONFIG.HTML_INDEX['mylessons']})
+    return render(request, "mylessons.html", {'result': result,'index' : CONFIG.HTML_INDEX['mylessons']})
 
 
 ###################################################################
@@ -164,7 +163,6 @@ def subscribe(request):
     courseR = Course.objects.get(id=course_id)          # 这是要预定的课程
     openid = request.session.get('openid')
     student = Student.objects.get(openid=openid)
-
     mylesson = Course.objects.filter(students__openid=student.openid)
     mylessonID = []
     for lesson in mylesson:
@@ -204,7 +202,7 @@ def subscribe(request):
     course2student.course = courseR
     course2student.save()
     url = CONFIG.lessons
-    return redirect(url,{'result': result,'index':CONFIG.HTML_INDEX['lessons']})
+    return redirect(url,{'result': result,'index' : CONFIG.HTML_INDEX['lessons']})
 
 
 ###################################################################
@@ -234,7 +232,7 @@ def cancelSubscribe(request):
     course2student.delete()
 
     url = CONFIG.mylessons
-    return redirect(url,{'index':CONFIG.HTML_INDEX['mylessons']})
+    return redirect(url,{'index' : CONFIG.HTML_INDEX['mylessons']})
 
 ###################################################################
 #   老师预登录

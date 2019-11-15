@@ -27,6 +27,18 @@ database_zzh={
         'TEST_CHARSET': 'utf8mb4',
     }
 }
+database_dxz = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',       # 数据库引擎
+        'NAME': 'TDSport',
+        'USER': 'DONG',
+        'PASSWORD': '123456',
+        'HOST': 'localhost',    # 主机
+        'PORT': 3306,           # 数据库使用的端口
+        'TEST_CHARSET': 'utf8mb4',
+    }
+}
+
 #url
 r_oauth=ROOT_URL+'r_oauth/'
 user=ROOT_URL+'user/'
