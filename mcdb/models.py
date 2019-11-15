@@ -75,7 +75,6 @@ class Student(models.Model):
         return data
 
 
-
 class Teacher(models.Model):
     id=models.AutoField(primary_key=True, verbose_name='老师ID')
     name=models.CharField(max_length=20, verbose_name='老师姓名')
@@ -150,7 +149,6 @@ class Course(models.Model):
             data[f.name] = value
 
         return data
-
 
 
 class Course2Student(models.Model):

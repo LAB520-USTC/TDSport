@@ -34,7 +34,14 @@
     {% include 'footer.html' %}
 </div>
     <!-- 引入bootstrap js文件 -->
+    <script type="text/javascript" src="{% static 'jquery/jquery-3.4.1.js' %}"></script>
     <script type="text/javascript" src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'bootstrap/js/bootstrap.js' %}"></script>
+    <script type="text/javascript">
+        $(document).ready(function()
+            {
+                $('.weui-tabbar__item').eq({{ index }}).addClass('weui-bar__item_on').siblings('.weui-bar__item_on').removeClass('weui-bar__item_on');
+            })
+    </script>
 </body>
 </html>

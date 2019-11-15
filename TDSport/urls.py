@@ -29,8 +29,7 @@ urlpatterns = [
     url(r'^xadmin/', xadmin.site.urls),       # 后台管理页面
     url(r'^$', views.main),
     url(r'^r_oauth/', views.r_oauth),
-    url(r'^user/', views.get_userinfo),
-    url(r'^test/', views.test),
+    url(r'^user/', views.user),
     url(r'^robot/', make_view(myrobot)),
     url(r'^index/', views.index),
     url(r'^prelogin_teacher', views.prelogin_teacher),
@@ -40,5 +39,5 @@ urlpatterns = [
     url(r'^mylessons/', views.mylessons),
     url(r'^subscribe/', views.subscribe),
     url(r'^cancelSubscribe', views.cancelSubscribe),
-    url(r'^MP\_verify\_sxRnPUEiNOoBK6Xf\.txt', TemplateView.as_view(template_name='MP_verify_sxRnPUEiNOoBK6Xf.txt', content_type='text/plain')),
+    url(r'^MP_verify_sxRnPUEiNOoBK6Xf.txt', TemplateView.as_view(template_name='MP_verify_sxRnPUEiNOoBK6Xf.txt', content_type='text/plain')),
 ]

@@ -15,12 +15,12 @@ client.create_menu({
         {
             "type": "view",
             "name": "进入主页",
-            "url": "http://xuezhen.natapp1.cc/r_oauth"
+            "url": CONFIG.r_oauth,
         },
         {
             "type": "view",
             "name": "老师登录",
-            "url": "http://xuezhen.natapp1.cc/prelogin_teacher"
+            "url": CONFIG.prelogin_teacher
         }
     ]
 })

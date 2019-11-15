@@ -11,8 +11,8 @@ class AdministratorAdmin(object):
 
 
 class StudentAdmin(object):
-    list_display = ['id', 'openid', 'name', 'real_name', 'test1', 'phone', 'password', 'gender', 'age', 'content', 'isDelete', 'belong']
-    list_editable = ['phone', 'password', 'real_name', 'test1', 'gender', 'age', 'content']
+    list_display = ['id', 'openid', 'name', 'real_name',  'phone', 'password', 'gender', 'age', 'content', 'isDelete', 'belong']
+    list_editable = ['phone', 'password', 'real_name', 'gender', 'age', 'content']
     list_filter = ['id']
 
 
